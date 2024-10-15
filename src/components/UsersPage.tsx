@@ -1,47 +1,51 @@
-import axios from "axios"
-import { useEffect } from "react"
-import { ReqResUserListResponse } from "../interfaces"
+/* eslint-disable @typescript-eslint/no-misused-promises */
+import { useUsers } from "../hooks/useUsers";
+import { UserRow } from "./UserRow";
 
-const loadUsers = async() => {
-    try {
-        const { data } = await axios.get<ReqResUserListResponse>('https://reqres.in/api/users?page=2');
-        return data.data;
-     } catch (error) {
-        console.log(error);
-        return [];
-    }
-    
-    
-}
+
 export const UsersPage = () => {
-
-    useEffect(() => {
-        loadUsers().then(users => console.log(users))
-        .catch (error => console.log(error));
-        
-        // fetch('https://reqres.in/api/users?page=2')
-        // .then(resp => resp.json())
-        // .then(data => console.log(data));
-    })
+  
+    const {users, nextPage, prevPage} = useUsers();
   return (
     <>
-    <h3>Usuarios</h3>
-    <table>
+      <h3>Usuarios</h3>
+      <table>
         <thead>
-            <tr>
-                <th>Avatar</th>
-                <th>Nombre</th>
-                <th>Email</th>
-            </tr>
+          <tr>
+            <th>Avatar</th>
+            <th>Nombre</th>
+            <th>Email</th>
+          </tr>
         </thead>
         <tbody>
-            <tr>
-                <td>avatar</td>
-                <td>nombre</td>
-                <td>email</td>
+          {/* PRIMERA FORMA DE LLAMAR AL CONTENIDO DE UN MODELO */}
+          {/* {users.map((user) => (
+            <tr key={user.id}>
+              <td>
+                <img
+                  style={{ width: "50px" }}
+                  src={user.avatar}
+                  alt="User avatar"
+                />
+              </td>
+              <td>
+                {user.first_name}
+                {user.last_name}
+              </td>
+              <td>{user.email}</td>
             </tr>
+          ))} */}
+          {users.map((user) => (
+            <UserRow key={user.id} user={user} />
+          ))}
         </tbody>
-    </table>
+      </table>
+
+      <div>
+        <button onClick={prevPage}>Prev</button>
+        <button onClick={nextPage}>Next</button>
+      </div>
     </>
-  )
-}
+  );
+};
+
